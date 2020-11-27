@@ -1,9 +1,12 @@
 import React, {Component} from 'react';
 import s from './Quiz.module.scss';
 import ActiveQuiz from '../../components/active-quiz/active-quiz'
+import FinishedQuiz from '../../components/FinishedQuiz/FinishedQuiz';
 class Quiz extends Component {
 
     state = {
+        results: {},
+        isFinished: false,
         activeQuistion: 0,
         answerState: null,
         quiz: [
@@ -32,6 +35,7 @@ class Quiz extends Component {
         ],
 
     }
+    
 
     onAsnwerClickHandler = (anserId) => {
 
@@ -42,14 +46,22 @@ class Quiz extends Component {
             }
         }
         const question = this.state.quiz[this.state.activeQuistion]
+        const results = this.state.results;
+        
         if(question.rightAnswerId === anserId){
+            if (!results[question.id]) {
+                results[question.id] = 'success'
+            }
             this.setState({
-                answerState:{[anserId]: 'success'}
+                answerState:{[anserId]: 'success'},
+                results
             })
-            alert('Верно')
+            
             const timeout = window.setTimeout(() => {
                 if(this.isQuizFinished()){
-                    console.log('finish')
+                    this.setState({
+                        isFinished: true
+                    })
                 }else{
                     this.setState({
                         activeQuistion: this.state.activeQuistion + 1,
@@ -62,9 +74,10 @@ class Quiz extends Component {
             }, 1000)
             
         }else {
-            // alert('Не верно')
+            results[question.id] = 'error'
             this.setState({
-                answerState:{[anserId]: 'error'}
+                answerState:{[anserId]: 'error'},
+                results
             })
         }
         
@@ -72,20 +85,37 @@ class Quiz extends Component {
     isQuizFinished() {
         return this.state.activeQuistion + 1 === this.state.quiz.length
     }
+    rentryHandler = () => {
+        this.setState({
+            activeQuistion: 0,
+            answerState: null,
+            isFinished: false,
+            results: {}
+        })
+    }
     render(){
         return (
             <div className={s.Quiz}>
                 
                 <div className={s.QuizWrapper}>
                     <h1>Ответьте на все вопросы</h1>
-                    <ActiveQuiz 
-                        answers={this.state.quiz[this.state.activeQuistion].answers}
-                        question={this.state.quiz[this.state.activeQuistion].question}
-                        onAnserClick={this.onAsnwerClickHandler}
-                        quizLength={this.state.quiz.length}
-                        answerNumber={this.state.activeQuistion + 1}
-                        state={this.state.answerState}
+                    {
+                        this.state.isFinished
+                        ? <FinishedQuiz
+                            results={this.state.results}
+                            quiz={this.state.quiz}
+                            onRentry={this.rentryHandler}
+                        />
+                        : <ActiveQuiz 
+                            answers={this.state.quiz[this.state.activeQuistion].answers}
+                            question={this.state.quiz[this.state.activeQuistion].question}
+                            onAnserClick={this.onAsnwerClickHandler}
+                            quizLength={this.state.quiz.length}
+                            answerNumber={this.state.activeQuistion + 1}
+                            state={this.state.answerState}
                     />
+                    }
+                    
                 </div>
             </div>
         )
