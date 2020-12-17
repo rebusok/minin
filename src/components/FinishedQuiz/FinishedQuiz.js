@@ -1,7 +1,8 @@
 
 import React from 'react';
 import s from './FinishedQuiz.module.scss';
-import Button from '../Button/button'
+import Button from '../Button/button';
+import {Link} from "react-router-dom";
 
 
 const FinishedQuiz = (props) => {
@@ -23,8 +24,7 @@ const FinishedQuiz = (props) => {
                         props.results[quizItem.id] === 'error' ? 'fa-times' : 'fa-check',
                         s[props.results[quizItem.id]]
                     ]
-                    console.log(s[props.results[quizItem.id]])
-                    console.log(props.results)
+
                     return (
                         <li key={ind}>
                             <strong>{ind +1}</strong>.&nbsp;
@@ -42,9 +42,12 @@ const FinishedQuiz = (props) => {
                 <Button onClick={props.onRentry}
                         disabled={false}
                         type={'primary'}>Повторить</Button>
-                <Button 
-                disabled={false}
-                type={'success'}>Перейти в список тестов</Button>
+                <Link to={'/'}>
+                    <Button
+                        disabled={false}
+                        type={'success'}>Перейти в список тестов</Button>
+                </Link>
+
             </div>
         </div>
     )
