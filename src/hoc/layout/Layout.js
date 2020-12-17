@@ -24,7 +24,7 @@ class Layout extends Component {
         return (
             <div className={s.Layout}>
 
-                <Drover
+    gi            <Drover
                     isOpen={this.state.menu}
                     onClose={this.menuCloseHandler}
                     />
