@@ -57,8 +57,11 @@
     "react-app-polyfill": "^2.0.0",
     "react-dev-utils": "^11.0.1",
     "react-dom": "^17.0.1",
+    "react-redux": "^7.2.2",
     "react-refresh": "^0.8.3",
     "react-router-dom": "^5.2.0",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
     "resolve": "1.18.1",
     "resolve-url-loader": "^3.1.2",
     "sass-loader": "8.0.2",
@@ -73,7 +76,7 @@
     "webpack-manifest-plugin": "2.2.0",
     "workbox-webpack-plugin": "5.1.4"
   },
-  "homepage":"https://rebusok.github.io/minin",
+  "homepage": "https://rebusok.github.io/minin",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
