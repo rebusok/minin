@@ -77,6 +77,7 @@
     "workbox-webpack-plugin": "5.1.4"
   },
   "homepage": "https://rebusok.github.io/minin",
+
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",

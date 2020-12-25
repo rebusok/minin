@@ -4,21 +4,23 @@ import Button from "../../components/Button/button";
 import {createControl, validate, validateForm} from '../../form/formFraim';
 import Input from "../../components/UI/Input/Input";
 import Select from "../../components/UI/Select/Select";
-import axios from '../../axios/axios-quiz'
+
+import {connect} from "react-redux";
+import {createQuizQuestion, finishCreateQuiz} from "../../redux/store/actions/Create";
 
 const createOptionControl = (num) => {
     return createControl({
         label: `Вариант ${num}`,
         errorMes: 'Значение не может быть пустым',
         id: num
-    }, {required:true})
+    }, {required: true})
 }
 const createFormControls = () => {
     return {
         question: createControl({
             label: 'Введите вопрос',
             errorMes: 'Вопрос не может быть пустым'
-        }, {required:true}),
+        }, {required: true}),
         option1: createOptionControl(1),
         option2: createOptionControl(2),
         option3: createOptionControl(3),
@@ -29,7 +31,6 @@ const createFormControls = () => {
 class QuizCreator extends Component {
 
     state = {
-        quiz: [],
         rightAnswerId: 3,
         isFormValid: false,
         formControls: createFormControls()
@@ -38,65 +39,59 @@ class QuizCreator extends Component {
     submitHandler = (e) => {
         e.preventDefault()
     }
-    addQuestionHandler = () =>{
-        const quiz = this.state.quiz.concat();
-        const index = quiz.length +1;
+    addQuestionHandler = () => {
 
-        const {question, option1,option2,option3,option4} = this.state.formControls
+        const {question, option1, option2, option3, option4} = this.state.formControls
         const questionItem = {
             question: question.value,
-            id: index,
+            id: this.props.quiz.length + 1,
             rightAnswerId: this.state.rightAnswerId,
             answers: [
-                {text: option1.value, id:option1.id},
-                {text: option2.value, id:option2.id},
-                {text: option3.value, id:option3.id},
-                {text: option4.value, id:option4.id},
+                {text: option1.value, id: option1.id},
+                {text: option2.value, id: option2.id},
+                {text: option3.value, id: option3.id},
+                {text: option4.value, id: option4.id},
             ]
         }
-        quiz.push(questionItem)
+        this.props.createQuizQuestion(questionItem)
+
         this.setState({
-            quiz,
             rightAnswerId: 3,
             isFormValid: false,
             formControls: createFormControls()
         })
     }
-    createQuestionHandler = async (e) => {
+    createQuestionHandler =  (e) => {
         e.preventDefault()
-        try {
 
-            await axios.post('quizes.json', this.state.quiz)
-            this.setState({
-                quiz:[],
-                rightAnswerId: 3,
-                isFormValid: false,
-                formControls: createFormControls()
-            })
-        } catch (e){
-            console.log(e)
-        }
+        this.setState({
+            rightAnswerId: 3,
+            isFormValid: false,
+            formControls: createFormControls()
+        })
+        this.props.finishCreateQuiz()
+
 
     }
     changeHandler = (value, controlName) => {
-        const formControls = { ...this.state.formControls }
-        const control = { ...formControls[controlName] }
+        const formControls = {...this.state.formControls}
+        const control = {...formControls[controlName]}
 
         control.value = value
         control.touched = true
         control.valid = validate(control.value, control.validation)
-        formControls[controlName]= control
-
+        formControls[controlName] = control
 
 
         this.setState({
             formControls, isFormValid: validateForm(formControls)
         })
     }
-    renderInputs(){
+
+    renderInputs() {
 
         return Object.keys(this.state.formControls).map((controlName, inx) => {
-            const control  = this.state.formControls[controlName]
+            const control = this.state.formControls[controlName]
             return (
                 <React.Fragment key={controlName + inx}>
                     <Input
@@ -109,7 +104,7 @@ class QuizCreator extends Component {
                         shouldValidate={!!control.validation}
                         onChange={event => this.changeHandler(event.target.value, controlName)}
                     />
-                    {inx === 0  ? <hr/> : null}
+                    {inx === 0 ? <hr/> : null}
                 </React.Fragment>
             )
         })
@@ -122,17 +117,17 @@ class QuizCreator extends Component {
     }
 
     render() {
-    const select = <Select
-        label={'Выберите правильный ответ'}
-        value={this.state.rightAnswerId}
-        onChange={this.selectChangeHandler}
-        options={[
-            {text: 1, value: 1},
-            {text: 2, value: 2},
-            {text: 3, value: 3},
-            {text: 4, value: 4}
-        ]}
-    />
+        const select = <Select
+            label={'Выберите правильный ответ'}
+            value={this.state.rightAnswerId}
+            onChange={this.selectChangeHandler}
+            options={[
+                {text: 1, value: 1},
+                {text: 2, value: 2},
+                {text: 3, value: 3},
+                {text: 4, value: 4}
+            ]}
+        />
         return (
             <div className={style.QuizCreator}>
                 <div>
@@ -150,7 +145,7 @@ class QuizCreator extends Component {
                         <Button
                             type={'success'}
                             onClick={this.createQuestionHandler}
-                            disabled={this.state.quiz.length === 0}
+                            disabled={this.props.quiz.length === 0}
                         >Создать тест
                         </Button>
                     </form>
@@ -160,4 +155,17 @@ class QuizCreator extends Component {
     }
 }
 
-export default QuizCreator;
+const mapStateToProps = (state) => {
+    return {
+        quiz: state.create.quiz
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        createQuizQuestion: (item) => dispatch(createQuizQuestion(item)),
+        finishCreateQuiz: () => dispatch(finishCreateQuiz())
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuizCreator);
