@@ -77,13 +77,12 @@
     "workbox-webpack-plugin": "5.1.4"
   },
   "homepage": "https://rebusok.github.io/minin",
-
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deployGit": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
